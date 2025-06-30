@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <meta charset="utf-8">
+  <title>宅配買取 お申し込みフォーム</title>
+</head>
+<body>
+<style>
+  [v-cloak] {
+    display: none;
+  }
+
+  img {
+    vertical-align: bottom;
+  }
+
+  #app {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+</style>
+<div id="app" v-cloak>
+  <v-app>
+    <v-main>
+      <v-card class="ma-sm-5" tile>
+
+        <v-img
+          class="white--text align-end"
+          height="200px"
+          src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+        >
+          <v-card-title class="text-sm-h4 text-h5">宅配買取 お申し込みフォーム</v-card-title>
+        </v-img>
+
+        <template v-if="isDone">
+          <div class="pa-5">
+            <p class="text-center text-h5">お申し込みが完了しました</p>
+            <p class="text-center mb-0">ご利用頂きましてありがとうございました。</p>
+          </div>
+        </template>
+
+        <template v-else>
+          <p class="ma-5 mb-0">お申し込み完了まで約1分！下記の必要事項をご記入下さい。</p>
+
+          <v-form ref="form" class="pa-5">
+<!-- 
+            <template v-for="v in input.pickups">
+              <v-text-field
+                v-model="v.pickup_date"
+                :rules="rule.pickup_date"
+                label="集荷希望日"
+                type="date"
+                max="9999-12-31"
+              ></v-text-field>
+
+              <v-select
+                v-model="v.pickup_time"
+                label="集荷希望時間帯"
+                placeholder="選択してください"
+                :items="pickupTimes"
+              ></v-select>
+
+              <v-select
+                v-model="v.size_code"
+                :rules="rule.size_code"
+                label="ご希望の梱包サイズ"
+                placeholder="選択してください"
+                :items="sizeCodes"
+              ></v-select>
+
+              <v-select
+                v-model="v.material_code"
+                label="ご希望の梱包資材"
+                placeholder="選択してください"
+                :items="materialCodes"
+              ></v-select>
+            </template>
+-->
+            <v-row class="mt-n2">
+              <v-col cols="6">
+                <v-text-field
+                  v-model="input.last_name"
+                  :rules="rule.last_name"
+                  label="氏名(姓)"
+                  placeholder="田中"
+                  autocomplete="family-name"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="input.first_name"
+                  :rules="rule.first_name"
+                  label="氏名(名)"
+                  placeholder="太郎"
+                  autocomplete="given-name"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+
+            <v-row class="mt-n2">
+              <v-col cols="6">
+                <v-text-field
+                  v-model="input.last_kana"
+                  label="フリガナ(セイ)"
+                  placeholder="タナカ"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="input.first_kana"
+                  label="フリガナ(メイ)"
+                  placeholder="タロウ"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+
+            <v-text-field
+              v-model="input.postal_code"
+              :rules="rule.postal_code"
+              label="郵便番号"
+              placeholder="564-0051"
+              type="tel"
+              autocomplete="postal-code"
+              append-icon="mdi-map-search-outline"
+              counter
+              :counter-value="() => 'クリックで住所を自動入力'"
+              @click:append="autocompleteAddress"
+            ></v-text-field>
+
+            <v-combobox
+              v-model="input.prefecture"
+              :rules="rule.prefecture"
+              label="都道府県"
+              :items="prefectures"
+              autocomplete="address-level1"
+            ></v-combobox>
+
+            <v-text-field
+              v-model="input.address1"
+              :rules="rule.address1"
+              label="市区町村"
+              placeholder="吹田市"
+              autocomplete="address-level2"
+            ></v-text-field>
+
+            <v-text-field
+              v-model="input.address2"
+              :rules="rule.address2"
+              label="それ以降の住所"
+              placeholder="豊津町1-2-3"
+              ref="inputAddr2"
+              autocomplete="address-line1"
+            ></v-text-field>
+
+            <v-radio-group
+              v-model="input.sex"
+              label="性別"
+              row
+            >
+              <v-radio label="男性" value="MALE"></v-radio>
+              <v-radio label="女性" value="FEMALE"></v-radio>
+              <v-radio label="その他" value="OTHER"></v-radio>
+            </v-radio-group>
+
+            <v-text-field
+              v-model="input.email"
+              :rules="rule.email"
+              label="メールアドレス"
+              placeholder="example@domain.com"
+              type="email"
+              autocomplete="email"
+            ></v-text-field>
+
+            <v-text-field
+              v-model="input.tel"
+              :rules="rule.tel"
+              label="電話番号"
+              placeholder="090-1234-5678"
+              type="tel"
+              autocomplete="tel"
+            ></v-text-field>
+<!-- 
+            <v-radio-group
+              v-model="input.message_channel"
+              :rules="rule.message_channel"
+              label="ご連絡方法"
+              row
+            >
+            
+              <v-radio label="メール" value="EMAIL"></v-radio>
+              <v-radio label="SMS" value="SMS"></v-radio>
+              <v-radio label="LINE" value="LINE"></v-radio>
+            </v-radio-group>
+-->
+            <v-textarea
+              v-model="input.comment"
+              label="備考"
+              placeholder="何かあればご記入ください"
+              auto-grow
+            ></v-textarea>
+
+            <v-divider class="my-4"></v-divider>
+
+            <v-btn depressed color="primary" x-large block :loading="isSending" @click="send">
+              <v-icon left>mdi-send</v-icon>
+              申し込む
+            </v-btn>
+
+          </v-form>
+        </template>
+
+      </v-card>
+    </v-main>
+  </v-app>
+</div>
+
+<script>
+  // NOVASTOから発行されたAPIキーを設置　このキーを基にReCOREのどのカンパニー・店舗に依頼が飛ぶか判定される
+  const identification = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55X2lkIjoianRjY2VudGVyIiwic2NvcGUiOiJiYWQ6b2ZmZXI6c3RvcmUiLCJpYXQiOjE3NTAxMjk1OTYsInN0b3JlX2lkIjozNH0.AIjVdcQziD2Ct9wMq__O1wnELK9NvYqEsSPAeVQmA0g'
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+
+<script>
+  new Vue({
+    el: '#app',
+    vuetify: new Vuetify(),
+
+    data() {
+      return {
+        isSending: false,
+        isDone: false,
+
+        input: {
+          is_pickup: false, // ヤマト自動集荷連携をONにしたい場合はtrueに　詳細はhttps://novasto.github.io/ReCORE.co-api/spec/bad_offer.html
+          pickups: [{
+            pickup_date: null,
+            pickup_time: null,
+            size_code: null,
+            material_code: null,
+          }],
+          last_name: null,
+          first_name: null,
+          last_kana: null,
+          first_kana: null,
+          postal_code: null,
+          prefecture: null,
+          address1: null,
+          address2: null,
+          sex: null,
+          email: null,
+          tel: null,
+          message_channel: "EMAIL",
+          comment: null,
+          member_jwt: null,
+        },
+
+        rule: {
+          pickup_date: [
+            v => !this.input.is_pickup || !!v || '集荷希望日を入力してください',
+          ],
+          size_code: [
+            v => !this.input.is_pickup || !!v || '梱包サイズを選択してください',
+          ],
+          last_name: [
+            v => !!v || '氏名(姓)を入力してください',
+          ],
+          first_name: [
+            v => !!v || '氏名(名)を入力してください',
+          ],
+          postal_code: [
+            v => !!v || '郵便番号を入力してください',
+            v => /^[0-9]{3}-?[0-9]{4}$/.test(v) || '郵便番号の形式が正しくありません'
+          ],
+          prefecture: [
+            v => !!v || '都道府県を選択してください',
+          ],
+          address1: [
+            v => !!v || '市区町村を入力してください',
+          ],
+          address2: [
+            v => !!v || 'それ以降の住所を入力してください',
+          ],
+          email: [
+            v => !!v || 'メールアドレスを入力してください',
+          ],
+          tel: [
+            v => !!v || '電話番号を入力してください',
+            v => /(?:^0[0-9]{9,10}$)|(?:^0[0-9]{1,3}-[0-9]{2,4}-[0-9]{3,4}$)/.test(v) || '電話番号の形式が正しくありません'
+          ],
+          message_channel: [
+            v => !!v || 'ご連絡方法を選択してください',
+          ],
+        },
+
+        // 各社に合わせてカスタマイズする（コード一覧はhttps://novasto.github.io/ReCORE.co-api/spec/bad_offer.html参照）
+        pickupTimes: [
+          {value: 'AM', text: '午前中'},
+          {value: '14', text: '14時-16時'},
+          {value: '16', text: '16時-18時'},
+          {value: '18', text: '18時以降'},
+        ],
+
+        // 各社に合わせてカスタマイズする（コード一覧はhttps://novasto.github.io/ReCORE.co-api/spec/bad_offer.html参照）
+        sizeCodes: [
+          {value: '0601', text: '宅急便着払60サイズ'},
+          {value: '0602', text: '宅急便着払80サイズ'},
+        ],
+
+        // 各社に合わせてカスタマイズする（コード一覧はhttps://novasto.github.io/ReCORE.co-api/spec/bad_offer.html参照）
+        materialCodes: [
+          {value: '001', text: '簡易袋(001)'},
+          {value: '002', text: 'クッション袋A3(002)'},
+        ],
+
+        prefectures: [
+          '北海道',
+          '青森県',
+          '岩手県',
+          '宮城県',
+          '秋田県',
+          '山形県',
+          '福島県',
+          '茨城県',
+          '栃木県',
+          '群馬県',
+          '埼玉県',
+          '千葉県',
+          '東京都',
+          '神奈川県',
+          '新潟県',
+          '富山県',
+          '石川県',
+          '福井県',
+          '山梨県',
+          '長野県',
+          '岐阜県',
+          '静岡県',
+          '愛知県',
+          '三重県',
+          '滋賀県',
+          '京都府',
+          '大阪府',
+          '兵庫県',
+          '奈良県',
+          '和歌山県',
+          '鳥取県',
+          '島根県',
+          '岡山県',
+          '広島県',
+          '山口県',
+          '徳島県',
+          '香川県',
+          '愛媛県',
+          '高知県',
+          '福岡県',
+          '佐賀県',
+          '長崎県',
+          '熊本県',
+          '大分県',
+          '宮崎県',
+          '鹿児島県',
+          '沖縄県',
+        ],
+      }
+    },
+
+
+    methods: {
+      async autocompleteAddress() {
+        const code = String(this.input.postal_code).replace(/-/g, '')
+        if (!/^[0-9]{7}$/.test(code)) {
+          return
+        }
+
+        const {data} = await axios.request('https://zip2addr.nvst.jp', {
+          method: 'get',
+          params: {
+            code
+          }
+        }).catch(e => e.response || {})
+
+        if (!(Array.isArray(data) && data.length > 0)) {
+          return
+        }
+
+        this.input.prefecture = data[0].addr1
+        this.input.address1 = data[0].addr2
+        this.input.address2 = data[0].addr3
+        this.$refs.inputAddr2.focus()
+      },
+
+      async send() {
+        if (!this.$refs.form.validate()) {
+          window.scroll({top: 0, behavior: 'smooth'})
+          return
+        }
+
+        this.isSending = true
+
+        const {data, status} = await axios.request('https://co-api.recore-pos.com/bad/offer', {
+          method: 'post',
+          headers: {
+            'X-Identification': identification,
+          },
+          data: this.input
+        }).catch(e => e.response || {})
+
+        this.isSending = false
+
+        if (String(status).startsWith('2')) {
+          this.isDone = true
+        } else {
+          alert(data && data.error ? data.error.message : 'エラーが発生しました')
+        }
+      }
+    },
+  })
+</script>
+</body>
+</html>
